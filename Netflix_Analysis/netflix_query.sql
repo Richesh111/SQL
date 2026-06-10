@@ -57,7 +57,51 @@ select * from dbo.netflix_titles
 
 
  
- 7. FInd all the movies/series by 'Rajiv Chilaka'
+ --7. FInd all the movies/series by 'Rajiv Chilaka'
 
  select * from netflix_titles
  where director like '%Rajiv Chilaka%'
+
+
+ --8. List all tv shows with more than 5 seasons
+select type,duration from(
+SELECT type,
+    duration,
+    PARSENAME(REPLACE(duration, ' ', '.'), 2) AS num,
+    PARSENAME(REPLACE(duration, ' ', '.'), 1) AS text
+FROM netflix_titles
+where type='Tv show') as t1 
+where num>5
+
+
+
+ 
+ 
+
+ select column_name,data_type from INFORMATION_SCHEMA.columns
+
+ --8. Count the number of item in each genre
+
+ select Genre,count(Genre)Number_of_item from
+ (
+ select show_id,value as Genre from dbo.netflix_titles
+ cross apply string_split(listed_in,',')
+ )as t1
+ group by Genre
+
+
+ --10. find each year number of content release by india in netflix.
+ --return top 5 years with highest avg content release
+
+select year(date_added)Year,count(*),
+count(*)*100.0/(select count(*) from netflix_titles  where country='India')as release_year
+from netflix_titles
+where country='India'
+group by year(date_added)
+
+
+
+
+
+
+select * from dbo.netflix_titles
